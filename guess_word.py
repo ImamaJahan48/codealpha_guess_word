@@ -1,8 +1,11 @@
 import random
-def guess_word():
+import requests
 
-    words = ['python', 'java', 'ruby', 'javascript', 'c++']
-    word = random.choice(words)
+def guess_word():
+    # Get a list of English words
+    response = requests.get("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt")
+    words = response.text.splitlines()
+    word = random.choice(words).lower()
 
     guessed_letters = []
     attempts = 6
@@ -11,7 +14,6 @@ def guess_word():
     print("Guess the word letter by letter.")
 
     while attempts > 0:
-
         display = ""
 
         for letter in word:
@@ -28,14 +30,18 @@ def guess_word():
 
         guess = input("Enter a letter: ").lower()
 
-        if guess in word:
+        if guess in guessed_letters:
+            print("You already guessed that letter.")
+        elif guess in word:
             guessed_letters.append(guess)
             print("Correct!")
         else:
+            guessed_letters.append(guess)
             attempts -= 1
             print(f"Wrong guess. Attempts left: {attempts}")
 
     if attempts == 0:
         print("You lost! The word was:", word)
 
+# Start the game
 guess_word()
